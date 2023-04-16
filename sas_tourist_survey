@@ -1,0 +1,213 @@
+libname a "D:\大三\SAS\期末報告";
+data A.RENAMEDATA;
+infile 'D:\大三\SAS\期末報告\tourist_survey.csv'
+                 delimiter=','
+                 missover
+                 firstobs=2
+                 DSD
+                 lrecl = 32767;
+format VAR2 $28.;
+FORMAT VAR3 $30.;
+FORMAT VAR4 $26.;
+INPUT
+VAR1
+VAR2 $
+VAR3 $
+VAR4 $
+VAR5 $
+VAR6
+VAR7
+VAR8
+VAR9
+VAR10
+VAR11
+VAR12
+VAR13
+VAR14
+VAR15
+VAR16
+VAR17
+VAR18
+;
+RENAME
+VAR1=YEAR
+VAR2= TYPE
+VAR3=AREA
+VAR4=NAME
+VAR5=CITY
+VAR6 =JAN
+VAR7 =FEB
+VAR8 =MAR
+VAR9 =APR
+VAR10 =MAY
+VAR11 =JUN
+VAR12 =JUL
+VAR13 =AUG
+VAR14 =SEP
+VAR15 =OCT
+VAR16 =NOV
+VAR17 =DEC
+VAR18 =TOTAL
+;
+LABEL
+VAR3='TOURIST_AREA'
+VAR4='ATTRACTION_NAME'
+;
+RUN;
+
+PROC MEANS DATA=A.RENAMEDATA  MAX MIN STD;
+VAR TOTAL;
+CLASS CITY;
+WHERE YEAR=2019;
+OUTPUT OUT=A.F1 MAX=TOTAL;
+RUN;
+data A.F3;set A.F1;
+where _TYPE_ = 1;
+RUN;
+
+proc sort data=A.RENAMEDATA;
+by DESCENDING TOTAL;
+proc sort data=A.F3;
+by DESCENDING TOTAL;
+run;
+data A.RANK19 (KEEP=NAME CITY TYPE TOTAL);
+merge A.RENAMEDATA(in=t1) A.F3(in=t2);
+by DESCENDING TOTAL;
+if t2=1;
+array num[*] _numeric_ ;
+do i=1 to dim(num);
+if num[i]=. then num[i]=0;
+end;
+run;
+
+
+PROC MEANS DATA=A.RENAMEDATA  MAX MIN STD;
+VAR TOTAL;
+CLASS CITY;
+WHERE YEAR=2020;
+OUTPUT OUT=A.F2 MAX=TOTAL ;
+RUN;
+data A.F4;set A.F2;
+where _TYPE_ = 1;
+RUN;
+
+proc sort data=A.F4;
+by DESCENDING TOTAL;
+run;
+data A.RANK20 (KEEP=NAME CITY TYPE TOTAL);
+merge A.RENAMEDATA(in=t3) A.F4(in=t4);
+by DESCENDING TOTAL;
+if t4=1;
+array num[*] _numeric_ ;
+do i=1 to dim(num);
+if num[i]=. then num[i]=0;
+end;
+run;
+
+proc sql;
+create table no2in19 as
+select  YEAR,NAME, CITY, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+from A.RENAMEDATA
+where YEAR = 2019 AND NAME= '東豐自行車綠廊及后豐鐵馬道' ;
+QUIT;
+
+PROC TRANSPOSE DATA=no2in19 OUT=T3 NAME=MONTH;
+VAR JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ;
+BY NAME;
+
+TITLE '東豐自行車綠廊及后豐鐵馬道2019';
+PROC SGPLOT DATA=T3;
+SERIES X=MONTH Y=COL1;
+xaxis label='月份';
+yaxis label='人數' values=(400000 to 1200000 by 200000) ;
+RUN;
+
+proc sql;
+create table no2in20 as
+select  YEAR,NAME, CITY, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+from A.RENAMEDATA
+where YEAR = 2020 AND NAME= '東豐自行車綠廊及后豐鐵馬道' ;
+QUIT;
+
+PROC TRANSPOSE DATA=no2in20 OUT=T4 NAME=MONTH;
+VAR JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ;
+BY NAME;
+
+TITLE '東豐自行車綠廊及后豐鐵馬道2020';
+PROC SGPLOT DATA=T4;
+SERIES X=MONTH Y=COL1;
+xaxis label='月份';
+yaxis label='人數' values=(400000 to 1200000 by 200000);
+RUN;
+
+proc sql;
+create table no3in19 as
+select  YEAR,NAME, CITY, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+from A.RENAMEDATA
+where YEAR = 2019 AND NAME= '南鯤鯓代天府' ;
+QUIT;
+
+PROC TRANSPOSE DATA=no3in19 OUT=T5 NAME=MONTH;
+VAR JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ;
+BY NAME;
+
+TITLE '南鯤鯓代天府2019';
+PROC SGPLOT DATA=T5;
+SERIES X=MONTH Y=COL1;
+xaxis label='月份';
+yaxis label='人數' values=(100000 to 900000 by 200000) ;
+RUN;
+
+proc sql;
+create table no3in20 as
+select  YEAR,NAME, CITY, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+from A.RENAMEDATA
+where YEAR = 2020 AND NAME= '南鯤鯓代天府' ;
+QUIT;
+
+PROC TRANSPOSE DATA=no3in20 OUT=T6 NAME=MONTH;
+VAR JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ;
+BY NAME;
+
+TITLE '南鯤鯓代天府2020';
+PROC SGPLOT DATA=T6;
+SERIES X=MONTH Y=COL1;
+xaxis label='月份';
+yaxis label='人數' values=(100000 to 900000 by 200000) ;
+RUN;
+
+proc sql;
+create table no4in19 as
+select  YEAR,NAME, CITY, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+from A.RENAMEDATA
+where YEAR = 2019 AND NAME= '林口三井Outlet' ;
+QUIT;
+
+PROC TRANSPOSE DATA=no4in19 OUT=T7 NAME=MONTH;
+VAR JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ;
+BY NAME;
+
+TITLE '林口三井Outlet2019';
+PROC SGPLOT DATA=T7;
+SERIES X=MONTH Y=COL1;
+xaxis label='月份';
+yaxis label='人數' values=(500000 to 1000000 by 100000) ;
+RUN;
+
+proc sql;
+create table no4in20 as
+select  YEAR,NAME, CITY, JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+from A.RENAMEDATA
+where YEAR = 2020 AND NAME= '林口三井Outlet' ;
+QUIT;
+
+PROC TRANSPOSE DATA=no4in20 OUT=T8 NAME=MONTH;
+VAR JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ;
+BY NAME;
+
+TITLE '林口三井Outlet2020';
+PROC SGPLOT DATA=T8;
+SERIES X=MONTH Y=COL1;
+xaxis label='月份';
+yaxis label='人數' values=(500000 to 1000000 by 100000);
+RUN;
